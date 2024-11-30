@@ -2,7 +2,11 @@ use chrono::DateTime;
 use reqwest::StatusCode;
 
 use crate::structs::{ClanInfo, Price, Region};
-
+///    let regions = net::get_list_of_regions().await.expect("Eoorr");
+///    for region in &regions {
+///        println!("{} {}", region.id(), region.name());
+///    }
+println!("Total regions: {}", regions.len());
 
 pub async fn get_list_of_regions() -> Result<Vec<Region>, Box<dyn std::error::Error>> {
     let regions: Vec<serde_json::Value> = reqwest::get("https://eapi.stalcraft.net/regions")
