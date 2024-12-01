@@ -9,37 +9,26 @@ pub struct ConsoleMenu {
     width: usize,
     height: usize,
     frame: Vec<char>,
-    menu_h: usize,
     colors: Vec<(u32,u32,(u8,u8,u8))>,
 }
-/*pub fn colored(r: i32, g: i32, b: i32, text: &str) -> String {
-    return format!("\x1B[38;2;{};{};{}m{}\x1B[0m", r, g, b, text);
-}*/
 impl ConsoleMenu {
     pub fn empty() -> Self {
         ConsoleMenu {
             width: 0,
             height: 0,
             frame: vec![],
-            menu_h: 0,
             colors: Vec::new(),
         }
     }
     fn left_menu_w(&self) -> usize{ self.width / 2 }
     //fn right_menu_w(&self) -> usize{ (self.width / 2) - if self.width % 2 == 0 { 1 } else { 0 } }
     pub fn set_size(&mut self,width: usize,height: usize){
-        let line_width = width + 1;
-        let frame = vec![' '; line_width * height];
-        let menu_h = height - 4;
-
-        self.frame = frame;
-        self.menu_h = menu_h;
         self.width = width;
         self.height = height;
-        
+        self.frame = vec![' '; (width + 1) * height];
     }
     pub fn colorize(&mut self,start_x: u32,start_y: u32,end_x: u32,end_y: u32,col:(u8,u8,u8)){
-        if col == (0,0,0){
+        if col == (255,255,255){
             return;
         }
         let start_index = start_x + (start_y * (self.width as u32 + 1));
@@ -96,7 +85,7 @@ impl ConsoleMenu {
     }
 
     pub fn write_line(&mut self, l: usize, text: &str, offset: usize, empty_fill: char, menu: ConsoleMenusPosition) {
-        if l >= self.menu_h {
+        if l >= self.menu_h() {
             return;
         }
         let (from, to) = match menu {
@@ -116,7 +105,7 @@ impl ConsoleMenu {
         }
     }
     pub fn write_in_middle(&mut self, l: usize, text: &str, offset: i32, empty_fill: char, menu: ConsoleMenusPosition) {
-        if l >= self.menu_h {
+        if l >= self.menu_h() {
             return;
         }
         let (from, to) = match menu {
@@ -136,7 +125,7 @@ impl ConsoleMenu {
         }
      }
     pub fn clear(&mut self, l: usize, fill: char,menu: ConsoleMenusPosition) {
-        if l >= self.menu_h {
+        if l >= self.menu_h() {
             return;
         }
         let (from, to) = match menu {
@@ -151,13 +140,13 @@ impl ConsoleMenu {
         }
     }
     pub fn clear_pages(&mut self, fill: char) {
-        for i in 0..self.menu_h {
+        for i in 0..self.menu_h() {
             self.clear(i, fill, ConsoleMenusPosition::Left);
             self.clear(i, fill, ConsoleMenusPosition::Right);
         }
     }
     pub fn write_divided_into_rows(&mut self, l: usize, fill: char, texts: &[&str],menu: ConsoleMenusPosition) {
-        if l >= self.menu_h {
+        if l >= self.menu_h() {
             return;
         }
         if texts.is_empty() {
@@ -199,7 +188,7 @@ impl ConsoleMenu {
     }
 
     pub fn write_divided_into_rows_middle(&mut self, l: usize, fill: char, texts: &[&str],menu: ConsoleMenusPosition) {
-        if l >= self.menu_h {
+        if l >= self.menu_h() {
             return;
         }
         if texts.is_empty() {
@@ -242,14 +231,11 @@ impl ConsoleMenu {
     }
     
     pub fn menu_h(&self) -> usize {
-        self.menu_h
+        self.height - 4
     }
     
     pub fn width(&self) -> usize {
         self.width
-    }
-    pub fn height(&self) -> usize {
-        self.height
     }
 }
 

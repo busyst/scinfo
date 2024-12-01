@@ -1,3 +1,4 @@
+/*
 pub struct Region{
     id: String,
     name: String,
@@ -62,3 +63,4 @@ impl Price {
         Self { amount, price, time, additional }
     }
 }
+*/

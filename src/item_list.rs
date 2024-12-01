@@ -517,9 +517,6 @@ impl Recipe {
     pub fn level_reward(&self) -> &LevelReward {
         &self.level_reward
     }
-    pub fn recipe_name(&self) ->&'static str{
-        ITEMS[self.result.index].name
-    }
 }
 
 #[derive(Clone)]

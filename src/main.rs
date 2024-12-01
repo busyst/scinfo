@@ -27,8 +27,7 @@ async fn main() {
     menu.set_size(120, 28);
     println!("{}", menu);
     
-    let mut map = HashMap::new();
-    map.insert("Batareyka".to_string(), ("zy32".to_string(),32,32,32,32));
+    let map = HashMap::new();
     let apl = AucPriceList::new(map);
 
     let mut info_tab = InfoTab::new();
@@ -37,12 +36,8 @@ async fn main() {
     let mut items_tab = ItemTab::new();
     let mut recipes_tab = RecipesTab::new();
     let mut tab: &mut dyn Tab = &mut info_tab;
-
-    //menu.write_in_middle(0, "George",' ',0);
-    //menu.write_divided_into_rows(1, ' ', &["Name", "Price", "Date", "Kat"]);
-    //menu.write_divided_into_rows(2, ' ', &["Cacak", "2Kk", "Heute", "Op"]);
+    
     menu.re_render();
-    //market_tab.show(&mut menu,&apl);
     
 
     tab.show(&mut menu,&apl);
@@ -56,7 +51,7 @@ async fn main() {
         
         match (fc,sc) {
             ('/','I') => {
-                println!("W:{} H:{}",menu.width(),menu.height());
+                println!("W:{} H:{}",menu.width(),menu.menu_h() + 4);
                 // We want the cursor to stay at the end of the line, so we print without a newline and flush manually.
                 write!(io::stdout(), "Press any key to continue...").unwrap();
                 io::stdout().flush().unwrap();
@@ -78,9 +73,9 @@ async fn main() {
                         }
                     }
                     menu.re_render();
-                    tab.show(&mut menu,&apl);
-                    
+                    tab.show(&mut menu, &apl);
                 }
+
             },
             ('/','i') => {
                 menu.re_render();
@@ -115,8 +110,6 @@ async fn main() {
         input_buffer.clear();
 
     }
-    //net::get_item_price_history(regions.first().unwrap(), "zy32", "kys", 0).await?;
-
     
     println!("{}", menu);
 }

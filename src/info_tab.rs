@@ -22,6 +22,7 @@ impl Tab for InfoTab {
         menu.write_line(0, "/r - Recipies tab",0 , '\0',ConsoleMenusPosition::Right);
         menu.write_line(1, "/i - Items tab",0 , '\0',ConsoleMenusPosition::Right);
         menu.write_line(2, "/h - Help (this tab)",0 , '\0',ConsoleMenusPosition::Right);
+        menu.write_line(3, "/m - Market tab",0 , '\0',ConsoleMenusPosition::Right);
 
     }
 

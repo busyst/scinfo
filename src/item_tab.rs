@@ -23,10 +23,10 @@ impl Tab for ItemTab {
             menu.clear(x, ' ', ConsoleMenusPosition::Left);
         }
     
-        let mut show_index = self.index;
-    
+
         // Adjust index offset to keep the selected item visible
         if self.index >= 0 {
+            let mut show_index = self.index;
             let mut index_offset = 0;
             while (show_index as usize).saturating_sub(index_offset) > ((3 * menu.menu_h()) / 4) {
                 index_offset += menu.menu_h() / 2;
@@ -54,13 +54,14 @@ impl Tab for ItemTab {
                 }else {
                     format!("{} {}{}",fixed_index_str,' ',x.name())
                 };
+                let q = 5 + (menu.width()/8) as u32;
                 match acquire_quality(x.tags()) {
                     crate::item_list::Quality::Picklock => {}
-                    crate::item_list::Quality::Newbie => {menu.colorize(5, 3+iter as u32, 7, 3+iter as u32, (16,255,16));}
-                    crate::item_list::Quality::Stalker => {menu.colorize(5, 3+iter as u32, 7, 3+iter as u32, (27,25,255));}
-                    crate::item_list::Quality::Veteran => {menu.colorize(5, 3+iter as u32, 7, 3+iter as u32, (255,14,255));}
-                    crate::item_list::Quality::Master => {menu.colorize(5, 3+iter as u32, 7, 3+iter as u32, (255,8,8));}
-                    crate::item_list::Quality::Legend => {menu.colorize(5, 3+iter as u32, 7, 3+iter as u32, (255,215,0));}
+                    crate::item_list::Quality::Newbie => {menu.colorize(5, 3+iter as u32, q, 3+iter as u32, (16,255,16));}
+                    crate::item_list::Quality::Stalker => {menu.colorize(5, 3+iter as u32, q, 3+iter as u32, (27,25,255));}
+                    crate::item_list::Quality::Veteran => {menu.colorize(5, 3+iter as u32, q, 3+iter as u32, (255,14,255));}
+                    crate::item_list::Quality::Master => {menu.colorize(5, 3+iter as u32, q, 3+iter as u32, (255,8,8));}
+                    crate::item_list::Quality::Legend => {menu.colorize(5, 3+iter as u32, q, 3+iter as u32, (255,215,0));}
                 }
                 // Prepare item details for display
                 let details = vec![

@@ -1,6 +1,6 @@
-use std::{collections::{HashMap, HashSet}, ops::{Add, AddAssign}};
+use std::collections::{HashMap, HashSet};
 
-use crate::{console_menu::{ConsoleMenu, ConsoleMenusPosition}, item_list::{item_index, Item, ITEMS, RECIPES}, Tab};
+use crate::{console_menu::{ConsoleMenu, ConsoleMenusPosition}, item_list::{item_index, Item, LevelReward, ITEMS, RECIPES}, Tab};
 fn levenshtein_distance(s1: &str, s2: &str) -> usize {
     let s1_chars: Vec<char> = s1.chars().collect();
     let s2_chars: Vec<char> = s2.chars().collect();
@@ -52,11 +52,9 @@ enum RecipeStep{
     // Item id, count
     TakeRem(usize,u32),
     // Item id, count
-    Take(usize,u32),
-    // Item id, count
     Buy(usize,u32),
-    // Craft id, count
-    Craft(usize,u32),
+    // Item id, Recipe id, count
+    Craft(usize,usize,u32),
 }
 
 pub struct RecipesTab{
@@ -70,10 +68,7 @@ impl RecipesTab {
     pub fn new() -> Self {
         Self {index:-1, mode: 1, number: 1, update: false}
     }
-    
-    pub fn set_index(&mut self, index: i32) {
-        self.index = index;
-    }
+
     fn is_recipe_recursive(recipe_index: usize, visited: &mut HashSet<usize>, ingr_ignore: &HashSet<usize>) -> bool {
         // Reset visited set for each new top-level recipe check
         visited.clear();
@@ -116,13 +111,12 @@ impl RecipesTab {
         index_for_item_and_count: (usize, u32),
         steps: &mut Vec<(RecipeStep, u16)>,
         extra_items: &mut HashMap<usize,u32>,
+        items_to_buy_unconditionaly : &HashSet<usize>
     ) {
         let mut items_to_craft = vec![index_for_item_and_count];
         //let mut processed_recipes: HashSet<usize> = HashSet::new();
         let mut deep = 0;
         
-        let mut infinite_items: HashSet<usize> = HashSet::new();
-        infinite_items.insert(item_index("Bottle of Pure Water"));
 
         while !items_to_craft.is_empty() {
             let mut current_item = items_to_craft.remove(0);
@@ -153,7 +147,7 @@ impl RecipesTab {
                 }*/
                 // Check if the recipe is recursive
                 let mut recursion_check = HashSet::new();
-                if Self::is_recipe_recursive(idx, &mut recursion_check,&infinite_items) {
+                if Self::is_recipe_recursive(idx, &mut recursion_check,&items_to_buy_unconditionaly) && false {
                     // If recipe is recursive, buy the item directly
                     steps.push((RecipeStep::Buy(current_item.0, current_item.1), deep));
                     continue;
@@ -163,24 +157,24 @@ impl RecipesTab {
                 let mut a_steps = vec![];
                 let times = (current_item.1 + rec.result().count() - 1) / rec.result().count();
                 for x in rec.ingredients().iter() {
-                    if infinite_items.contains(&x.index()){
+                    if items_to_buy_unconditionaly.contains(&x.index()){
                         a_steps.push((x.index(), x.count()));
                     }else {
                         items_to_craft.insert(0, (x.index(),x.count()*times));
                     }
                 }
                 // Craft the requested item
-                steps.push((RecipeStep::Craft(current_item.0, times), deep));
+                steps.push((RecipeStep::Craft(current_item.0, idx, times), deep));
                 let delta_rec = times * rec.result().count() - current_item.1;
                 if delta_rec != 0{
                     if extra_items.contains_key(&current_item.0){
-                        extra_items.get_mut(&current_item.0).unwrap().add_assign(delta_rec);
+                        *extra_items.get_mut(&current_item.0).unwrap() += delta_rec;
                     }else {
                         extra_items.insert(current_item.0, delta_rec);
                     }
                 } 
                 for x in &a_steps {
-                    steps.push((RecipeStep::Take(x.0, x.1 * times),deep + 1));
+                    steps.push((RecipeStep::Buy(x.0, x.1 * times),deep + 1));
                 }
                 if items_to_craft.len() == rec.ingredients().len() - 1{
                     items_to_craft.push((0,0));
@@ -278,10 +272,10 @@ impl Tab for RecipesTab {
         let mut i = 0;
 
         let mut delta: HashMap<usize,u32> = HashMap::new();
-        let mut buy: Vec<(usize, i32)> = vec![];
-
         let mut steps = vec![];
-        RecipesTab::recept_solver((rec.result().index() as usize,self.number),&mut steps,&mut delta);
+        let mut infinite_items:HashSet<usize>  = HashSet::new();
+        infinite_items.insert(item_index("Bottle of Pure Water"));
+        RecipesTab::recept_solver((rec.result().index() as usize,self.number),&mut steps,&mut delta, &infinite_items);
         for x in steps.iter() {
             let r = match x {
                 (RecipeStep::Buy(i, a),d) => {
@@ -291,19 +285,12 @@ impl Tab for RecipesTab {
                     }
                     format!("{}Buy:{} \"{}\"",spaces,a ,ITEMS[*i].name())
                 }
-                (RecipeStep::Craft(i, a),d) => {
+                (RecipeStep::Craft(i,_, a),d) => {
                     let mut spaces = String::new();
                     for _ in 0..*d {
                         spaces += " ";
                     }
                     format!("{}Craft:\"{}\" {} times", spaces, ITEMS[*i].name(), a)
-                }
-                (RecipeStep::Take(i, a),d) => {
-                    let mut spaces = String::new();
-                    for _ in 0..*d {
-                        spaces += " ";
-                    }
-                    format!("{}Take:{} \"{}\"",spaces,a ,ITEMS[*i].name())
                 }
                 (RecipeStep::TakeRem(i, a),d) => {
                     let mut spaces = String::new();
@@ -325,9 +312,65 @@ impl Tab for RecipesTab {
             menu.write_line(offset, &a, 0, '\0',  ConsoleMenusPosition::Left);
             offset+=1;
         }
+        let mut t = HashMap::new();
+        let mut energy_usage = 0;
+        let mut approx_price = 0;
+        let mut xp_rewards = Vec::new();
+        for x in &steps {
+            match x.0 {
+                RecipeStep::Craft(_, x, y) =>{
+                    energy_usage += RECIPES[x].energy_count() * y;
+
+                    fn update_xp_rewards(xp_rewards: &mut Vec<LevelReward>, new_reward: LevelReward) {
+                        if let Some((index, existing_reward)) = xp_rewards.iter().enumerate().find(|(_, reward)| 
+                            matches!(reward, LevelReward::Cooking(_))
+                        ) {
+                            if let LevelReward::Cooking(current_level) = existing_reward {
+                                xp_rewards[index] = match new_reward {
+                                    LevelReward::Cooking(x) => LevelReward::Cooking(current_level + x),
+                                    LevelReward::Engeneering(x) => LevelReward::Engeneering(current_level + x),
+                                    _ => new_reward,
+                                };
+                            }
+                        } else {
+                            xp_rewards.push(new_reward);
+                        }
+                    }
+                    match RECIPES[x].level_reward() {
+                        LevelReward::Cooking(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Cooking(*x)),
+                        LevelReward::Engeneering(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Engeneering(*x)),
+                        LevelReward::Moonshining(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Moonshining(*x)),
+                        LevelReward::RawMaterials(x) => update_xp_rewards(&mut xp_rewards, LevelReward::RawMaterials(*x)),
+                        LevelReward::None => {}
+                    }
+                }
+                RecipeStep::Buy(x, y) =>{
+                    approx_price += ITEMS[x].sell_price() * y;
+                    if t.contains_key(&x){
+                        *t.get_mut(&x).unwrap() += y;
+                    }else {
+                        t.insert(x, y);
+                    }
+                }
+                _ => {}
+            }
+        }
         menu.write_in_middle(0, "Statistics", 0, '-',  ConsoleMenusPosition::Right);
-        menu.write_line(1, format!("Complexity:    {}",steps.len()).as_str(), 0, '-',  ConsoleMenusPosition::Right);
-        //menu.write_line(2, format!("Energy usage:  {}",stats.0).as_str(), 0, '-',  ConsoleMenusPosition::Right);
+        menu.write_line(1, format!("Complexity:    {} steps",steps.len()).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+        menu.write_line(2, format!("Energy usage:  {} units",energy_usage).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+        menu.write_line(3, format!("Approximaete price to sell {}",approx_price).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+        menu.write_line(4, format!("Starting ingrds").as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+        let mut ind = 0;
+        for i in 0..menu.menu_h() - 4 {
+            if ind < t.len(){
+                menu.write_line(i+5, format!("Get \"{}\" {}",t.iter().nth(ind).unwrap().1,ITEMS.iter().nth(*t.iter().nth(ind).unwrap().0).unwrap().name()).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+            } else {
+                menu.write_line(i+5, "", 0, ' ', ConsoleMenusPosition::Right);
+            }
+
+            ind+=1;
+        }
+        
     }
     fn input(&mut self, x: &str) {
         self.update = true;
