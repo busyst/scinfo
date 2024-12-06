@@ -62,11 +62,12 @@ pub struct RecipesTab{
     update:bool,
     number:u32,
     mode:u8,
+    mode_subsection: u8,
 }
 
 impl RecipesTab {
     pub fn new() -> Self {
-        Self {index:-1, mode: 1, number: 1, update: false}
+        Self {index:-1, mode: 1, mode_subsection: 0, number: 1, update: false}
     }
 
     fn is_recipe_recursive(recipe_index: usize, visited: &mut HashSet<usize>, ingr_ignore: &HashSet<usize>) -> bool {
@@ -304,43 +305,60 @@ impl Tab for RecipesTab {
             menu.write_line(i + 3, &r, 0, '\0',  ConsoleMenusPosition::Left);
             i+=1;
         }
-        menu.write_in_middle(i + 3, "Excess", 0, '\0',  ConsoleMenusPosition::Left);
-        let mut offset = i + 4;
-        for x in delta {
-            let name = &ITEMS[x.0];
-            let a = format!("{} {}",name.name(),x.1);
-            menu.write_line(offset, &a, 0, '\0',  ConsoleMenusPosition::Left);
-            offset+=1;
+        if self.mode_subsection == 2{
+            menu.write_in_middle(0, "Excess ('>' to change mode)", 0, ' ',  ConsoleMenusPosition::Right);
+            let mut offset = 0;
+            for i in 0..menu.menu_h() - 1 {
+                if offset < delta.len(){
+                    let x = delta.iter().nth(offset).unwrap();
+                    let name = &ITEMS[*x.0];
+                    let a = format!("{} {}",name.name(),x.1);
+                    menu.write_line(i + 1, &a, 0, ' ',  ConsoleMenusPosition::Right);
+                } else {
+                    menu.write_line(i+1, "", 0, ' ', ConsoleMenusPosition::Right);
+                }
+                offset+=1;
+            }
+            return;
         }
         let mut t = HashMap::new();
         let mut energy_usage = 0;
         let mut approx_price = 0;
-        let mut xp_rewards = Vec::new();
+        let mut xp_rewards: HashMap<LevelReward, u32> = HashMap::new();
         for x in &steps {
             match x.0 {
-                RecipeStep::Craft(_, x, y) =>{
-                    energy_usage += RECIPES[x].energy_count() * y;
+                RecipeStep::Craft(_, x, times) =>{
+                    energy_usage += RECIPES[x].energy_count() * times;
 
-                    fn update_xp_rewards(xp_rewards: &mut Vec<LevelReward>, new_reward: LevelReward) {
-                        if let Some((index, existing_reward)) = xp_rewards.iter().enumerate().find(|(_, reward)| 
-                            matches!(reward, LevelReward::Cooking(_))
-                        ) {
-                            if let LevelReward::Cooking(current_level) = existing_reward {
-                                xp_rewards[index] = match new_reward {
-                                    LevelReward::Cooking(x) => LevelReward::Cooking(current_level + x),
-                                    LevelReward::Engeneering(x) => LevelReward::Engeneering(current_level + x),
-                                    _ => new_reward,
-                                };
-                            }
-                        } else {
-                            xp_rewards.push(new_reward);
-                        }
-                    }
                     match RECIPES[x].level_reward() {
-                        LevelReward::Cooking(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Cooking(*x)),
-                        LevelReward::Engeneering(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Engeneering(*x)),
-                        LevelReward::Moonshining(x) => update_xp_rewards(&mut xp_rewards, LevelReward::Moonshining(*x)),
-                        LevelReward::RawMaterials(x) => update_xp_rewards(&mut xp_rewards, LevelReward::RawMaterials(*x)),
+                        LevelReward::Cooking(reward_xp) => {
+                            if let Some(x) = xp_rewards.get_mut(&LevelReward::Cooking(0)){
+                                *x += reward_xp * times;
+                            }else {
+                                xp_rewards.insert(LevelReward::Cooking(0), reward_xp * times);
+                            }
+                        }
+                        LevelReward::Engineering(reward_xp) => {
+                            if let Some(x) = xp_rewards.get_mut(&LevelReward::Engineering(0)){
+                                *x += reward_xp * times;
+                            }else {
+                                xp_rewards.insert(LevelReward::Engineering(0), reward_xp * times);
+                            }
+                        }
+                        LevelReward::Moonshining(reward_xp) => {
+                            if let Some(x) = xp_rewards.get_mut(&LevelReward::Moonshining(0)){
+                                *x += reward_xp * times;
+                            }else {
+                                xp_rewards.insert(LevelReward::Moonshining(0), reward_xp * times);
+                            }
+                        }
+                        LevelReward::RawMaterials(reward_xp) => {
+                            if let Some(x) = xp_rewards.get_mut(&LevelReward::RawMaterials(0)){
+                                *x += reward_xp * times;
+                            }else {
+                                xp_rewards.insert(LevelReward::RawMaterials(0), reward_xp * times);
+                            }
+                        }
                         LevelReward::None => {}
                     }
                 }
@@ -355,26 +373,60 @@ impl Tab for RecipesTab {
                 _ => {}
             }
         }
-        menu.write_in_middle(0, "Statistics", 0, '-',  ConsoleMenusPosition::Right);
-        menu.write_line(1, format!("Complexity:    {} steps",steps.len()).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
-        menu.write_line(2, format!("Energy usage:  {} units",energy_usage).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
-        menu.write_line(3, format!("Approximaete price to sell {}",approx_price).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
-        menu.write_line(4, format!("Starting ingrds").as_str(), 0, ' ',  ConsoleMenusPosition::Right);
-        let mut ind = 0;
-        for i in 0..menu.menu_h() - 4 {
-            if ind < t.len(){
-                menu.write_line(i+5, format!("Get \"{}\" {}",t.iter().nth(ind).unwrap().1,ITEMS.iter().nth(*t.iter().nth(ind).unwrap().0).unwrap().name()).as_str(), 0, ' ', ConsoleMenusPosition::Right);
-            } else {
-                menu.write_line(i+5, "", 0, ' ', ConsoleMenusPosition::Right);
+        if self.mode_subsection == 0{
+            
+            menu.write_in_middle(0, "Statistics ('>' to change mode)", 0, ' ',  ConsoleMenusPosition::Right);
+            menu.write_line(1, format!("Complexity:    {} steps",steps.len()).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            menu.write_line(2, format!("Energy usage:  {} units",energy_usage).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            menu.write_line(3, format!("Approximaete price to sell {}",approx_price).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            menu.write_in_middle(4, format!("Expirience").as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            let mut indx = 0;
+            for x in &xp_rewards {
+                match x {
+                    (LevelReward::Cooking(_),x) =>{
+                        menu.write_line(indx + 5, format!("Cooking: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                    }
+                    (LevelReward::Moonshining(_),x) =>{
+                        menu.write_line(indx + 5, format!("Moonshining: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                    }
+                    (LevelReward::Engineering(_),x) => {
+                        menu.write_line(indx + 5, format!("Engeneering: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                    }
+                    (LevelReward::RawMaterials(_),x) => {
+                        menu.write_line(indx + 5, format!("Raw materials: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                    }
+                    (_,_) => {}
+                }
+                indx+=1;
             }
-
-            ind+=1;
+            for i in (indx + 5)..menu.menu_h() {
+                menu.clear(i, ' ', ConsoleMenusPosition::Right);
+            }
+        }else {
+            menu.write_in_middle(0, format!("Starting ingradients ('>' to change mode)").as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            let mut ind = 0;
+            let mut a: Vec<(usize, u32)> = t.iter().map(|x| (x.0.clone(), x.1.clone())).collect();
+            a.sort_by(|x,y| y.1.cmp(&x.1));
+            for i in 0..menu.menu_h() - 1 {
+                if ind < a.len(){
+                    menu.write_line(i+1, format!("Get \"{}\" {}",a.iter().nth(ind).unwrap().1,ITEMS.iter().nth(a.iter().nth(ind).unwrap().0).unwrap().name()).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                } else {
+                    menu.write_line(i+1, "", 0, ' ', ConsoleMenusPosition::Right);
+                }
+    
+                ind+=1;
+            }
         }
+        
+
         
     }
     fn input(&mut self, x: &str) {
         self.update = true;
         match x.chars().next() {
+            Some('>') =>{
+                self.mode_subsection = (self.mode_subsection + 1) % 3;
+            }
             Some('m') =>{
                 self.mode = 1 - self.mode;
             }

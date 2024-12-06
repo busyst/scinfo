@@ -39,9 +39,7 @@ impl Tab for ItemTab {
         for iter in 0..menu.menu_h() {
             if let Some(x) = iterator.next() {
                 // Prepare item details with owned strings
-                let id_str = x.id().to_string();
                 let sell_price_str = if x.sell_price() == 0 {format!("-N/S-")} else{x.sell_price().to_string()};
-                let tags_str = x.tags().to_string();
                 let index_str = item_index(x.name()).to_string();
                 let mut fixed_index_str = String::new();
                 for _ in 1..(4usize.saturating_sub(index_str.len())) {
@@ -66,17 +64,23 @@ impl Tab for ItemTab {
                 // Prepare item details for display
                 let details = vec![
                     id_name.as_str(),
-                    id_str.as_str(),
                     sell_price_str.as_str(),
-                    tags_str.as_str(),
                 ];
         
                 // Write item details to menu
                 menu.write_divided_into_rows(iter, ' ', details.as_slice(), ConsoleMenusPosition::Left);
             }else {
-                menu.clear(iter, ' ', ConsoleMenusPosition::Center);
+                menu.clear(iter, ' ', ConsoleMenusPosition::Left);
+                menu.clear(iter, ' ', ConsoleMenusPosition::Right);
             }
+            menu.clear(iter, ' ', ConsoleMenusPosition::Right);
         }
+        if self.index >=0 && self.index < ITEMS.len() as i32{
+            menu.write_line(0, format!("Rank:{}",acquire_quality(ITEMS[self.index as usize].tags()) as u32).as_str(), 0,' ',  ConsoleMenusPosition::Right);
+            menu.write_line(1, format!("ID:{}",ITEMS[self.index as usize].id()).as_str(), 0,' ',  ConsoleMenusPosition::Right);
+
+        }
+        
     }
 
     fn input(&mut self, text: &str) {

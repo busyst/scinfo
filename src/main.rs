@@ -71,6 +71,9 @@ async fn main() {
                         ) {
                             menu.set_size(width as usize, height as usize);
                         }
+                    }else if Some('a') == input_buffer.chars().nth(2){
+                        let x = termsize::get().unwrap();
+                        menu.set_size((x.cols) as usize, (x.rows-1) as usize);
                     }
                     menu.re_render();
                     tab.show(&mut menu, &apl);

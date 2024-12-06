@@ -33,80 +33,78 @@ pub const fn get_tags(q: Quality) -> u32 {
 
 
 pub const ITEMS: &[Item] = &[
-    //Item::new("Water Carrier", "m22k", 30, 0),
     // ------------------ Leafs -------------------------------------------------------------------------------
-    Item::new("Pale-Leaf", "", 5, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Acid Nettle", "", 10, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Water Carrier", "", 30, get_tags(Quality::Stalker)), // Done 23/11/2024
-    Item::new("Gnosis", "", 70, get_tags(Quality::Veteran)), // Done 23/11/2024
-    Item::new("Hellroot", "", 195, get_tags(Quality::Master)), // Done 23/11/2024
-    Item::new("Amber Wormwood", "", 480, get_tags(Quality::Legend)), // Done 23/11/2024
+    Item::new("Pale-Leaf", "rrrz", 5, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Acid Nettle", "033k", 10, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Water Carrier", "m22k", 30, get_tags(Quality::Stalker)), // Done 23/11/2024
+    Item::new("Gnosis", "ovv5", 70, get_tags(Quality::Veteran)), // Done 23/11/2024
+    Item::new("Hellroot", "npp9", 195, get_tags(Quality::Master)), // Done 23/11/2024
+    Item::new("Amber Wormwood", "prrd", 480, get_tags(Quality::Legend)), // Done 23/11/2024
     // ------------------ Minerals ----------------------------------------------------------------------------
-    Item::new("Dim Minerals", "", 20, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Emerald Minerals", "", 35, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Azure Minerals", "", 65, get_tags(Quality::Stalker)), // Done 23/11/2024
-    Item::new("Purple Minerals", "", 145, get_tags(Quality::Veteran)), // Done 23/11/2024
-    Item::new("Scarlet Minerals", "", 345, get_tags(Quality::Master)), // Done 23/11/2024
-    Item::new("Golden Minerals", "", 870, get_tags(Quality::Legend)), // Done 23/11/2024
+    Item::new("Dim Minerals", "wooz", 20, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Emerald Minerals", "400j", 35, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Azure Minerals", "kllj", 65, get_tags(Quality::Stalker)), // Done 23/11/2024
+    Item::new("Purple Minerals", "qvv4", 145, get_tags(Quality::Veteran)), // Done 23/11/2024
+    Item::new("Scarlet Minerals", "jlll", 345, get_tags(Quality::Master)), // Done 23/11/2024
+    Item::new("Golden Minerals", "lll2", 870, get_tags(Quality::Legend)), // Done 23/11/2024
     // ------------------ Pulps -------------------------------------------------------------------------------
-    Item::new("Saltweed Pulp", "", 35, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Mintfruit Pulp", "", 75, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Sweettooth Pulp", "", 160, get_tags(Quality::Stalker)), // Done 23/11/2024
-    Item::new("Spiritfruit Pulp", "", 280, get_tags(Quality::Veteran)), // Done 23/11/2024
-    Item::new("Cubemelon Pulp", "", 580, get_tags(Quality::Master)), // Done 23/11/2024
-    Item::new("Lemongrass Pulp", "", 1000, get_tags(Quality::Legend)), // Done 23/11/2024
+    Item::new("Saltweed Pulp", "9mmq", 35, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Mintfruit Pulp", "1ddr", 75, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Sweettooth Pulp", "g00n", 160, get_tags(Quality::Stalker)), // Done 23/11/2024
+    Item::new("Spiritfruit Pulp", "z77k", 280, get_tags(Quality::Veteran)), // Done 23/11/2024
+    Item::new("Cubemelon Pulp", "5ddo", 580, get_tags(Quality::Master)), // Done 23/11/2024
+    Item::new("Lemongrass Pulp", "y770", 1000, get_tags(Quality::Legend)), // Done 23/11/2024
     // ------------------ Food processing ---------------------------------------------------------------------
-    Item::new("Flour", "", 6, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Set of Spieces", "", 116, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Yeast", "", 14, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Bottle of Pure Water", "", 54, 0), // Done 23/11/2024
-    Item::new("Dough", "", 80, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Set of Spices", "", 116, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Can of Pasta", "", 85, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Animal Fat", "", 90, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Pickles", "", 308, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Tomato", "", 29, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Garlic", "", 50, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Pureed Vegetables", "", 86, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Sausage Slices", "", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
-    Item::new("Meat Preserves", "", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
-    Item::new("Excellent Canned Meat", "", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
-    Item::new("Navy-Style Pasta", "", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
+    Item::new("Flour", "6r0j", 6, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Set of Spices", "1dk6", 116, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Yeast", "rr05", 14, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Bottle of Pure Water", "rwow5", 54, 0), // Done 23/11/2024
+    Item::new("Dough", "6rn6", 80, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Can of Pasta", "y7mo", 85, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Animal Fat", "dqg5", 90, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Pickles", "g0y0", 308, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Tomato", "6rpy", 29, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Garlic", "7rp7", 50, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Pureed Vegetables", "z7y2", 86, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Sausage Slices", "y391o", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
+    Item::new("Meat Preserves", "okrq0", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
+    Item::new("Excellent Canned Meat", "j5456", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
+    Item::new("Navy-Style Pasta", "dm165", 0, get_tags(Quality::Stalker)), // Done 27/11/2024
     // ------------------ Meats -------------------------------------------------------------------------------
-    Item::new("Boar Meat", "", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Ground Boar Meat", "", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Mutt Meat", "", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Ground Dog Meat", "", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Piggy Meat", "", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Ground Piggy Meat", "", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Fish Fillet", "", 138, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Boar Meat", "2d76", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Ground Boar Meat", "7rvr", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Mutt Meat", "2dq0", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Ground Dog Meat", "2dkm", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Piggy Meat", "dq0n", 285, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Ground Piggy Meat", "3rjk", 171, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Fish Fillet", "9mn0", 138, get_tags(Quality::Newbie)), // Done 23/11/2024
     // ------------------ Moonshining -------------------------------------------------------------------------
-    Item::new("Juice", "", 62, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Anomalous Yeast", "", 45, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Braga", "", 387, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Industrial Alcohol", "", 38, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Wort", "", 54, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Base Wine", "", 85, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Tirage Liqueur", "", 79, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Wine with Sediment", "", 380, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Children's Champagne", "", 0, get_tags(Quality::Newbie)), // Done 30/11/2024
-    Item::new("Sparkling Champagne", "", 0, get_tags(Quality::Veteran)), // Done 30/11/2024
-    Item::new("Anomalous Champagne", "", 0, get_tags(Quality::Veteran)), // Done 30/11/2024
+    Item::new("Juice", "y75z", 62, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Anomalous Yeast", "40pn", 45, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Braga", "5drg", 387, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Industrial Alcohol", "drmwj", 38, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Wort", "vrwg", 54, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Base Wine", "1dwq", 85, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Tirage Liqueur", "g07g", 79, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Wine with Sediment", "r2mv", 380, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Children's Champagne", "wjwzp", 0, get_tags(Quality::Newbie)), // Done 30/11/2024
+    Item::new("Sparkling Champagne", "j5mg7", 0, get_tags(Quality::Veteran)), // Done 30/11/2024
+    Item::new("Anomalous Champagne", "m0pyj", 0, get_tags(Quality::Veteran)), // Done 30/11/2024
     // ------------------ <Woodworking> -----------------------------------------------------------------------
-    Item::new("Rotten Boards", "", 90, get_tags(Quality::Picklock)),
-    Item::new("Boards", "", 13, get_tags(Quality::Newbie)),
+    Item::new("Rotten Boards", "g0gp", 90, get_tags(Quality::Picklock)),
+    Item::new("Boards", "wogp", 13, get_tags(Quality::Newbie)),
     // ------------------ <Misc> ------------------------------------------------------------------------------
-    Item::new("Plastic Bottle", "", 20, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Half-rotten Fish", "", 200, get_tags(Quality::Picklock)), // Done 23/11/2024
-    Item::new("Thermal Mixture", "", 63, get_tags(Quality::Newbie)), // Done 23/11/2024
-    Item::new("Oil", "", 880, get_tags(Quality::Picklock)), // Done 27/11/2024
-    Item::new("Reagents", "", 35, get_tags(Quality::Newbie)), // Done 27/11/2024
-    Item::new("Petroleum Coke", "", 148, get_tags(Quality::Newbie)), // Done 27/11/2024
-    Item::new("Iron", "", 522, get_tags(Quality::Newbie)), // Done 27/11/2024
-    Item::new("Tin Can", "", 60, get_tags(Quality::Picklock)), // Done 27/11/2024
-    Item::new("Anomalous Dust", "", 250, get_tags(Quality::Stalker)), // Done 30/11/2024
-    Item::new("Changedust", "", 1250, get_tags(Quality::Veteran)), // Done 30/11/2024
-    Item::new("Glowing Sugar", "", 3663, get_tags(Quality::Stalker)), // Done 30/11/2024
+    Item::new("Plastic Bottle", "pry2", 20, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Half-rotten Fish", "3rpg", 200, get_tags(Quality::Picklock)), // Done 23/11/2024
+    Item::new("Thermal Mixture", "404p", 63, get_tags(Quality::Newbie)), // Done 23/11/2024
+    Item::new("Oil", "klwv", 880, get_tags(Quality::Picklock)), // Done 27/11/2024
+    Item::new("Reagents", "y7po", 35, get_tags(Quality::Newbie)), // Done 27/11/2024
+    Item::new("Petroleum Coke", "qv76", 148, get_tags(Quality::Newbie)), // Done 27/11/2024
+    Item::new("Iron", "jl77", 522, get_tags(Quality::Newbie)), // Done 27/11/2024
+    Item::new("Tin Can", "vrld", 60, get_tags(Quality::Picklock)), // Done 27/11/2024
+    Item::new("Anomalous Dust", "7l127", 250, get_tags(Quality::Stalker)), // Done 30/11/2024
+    Item::new("Changedust", "1rl71", 1250, get_tags(Quality::Veteran)), // Done 30/11/2024
+    Item::new("Glowing Sugar", "z3ozm", 3663, get_tags(Quality::Stalker)), // Done 30/11/2024
 ];
 pub const fn item_index(x: &'static str) -> usize {
     let mut i = 0;
@@ -394,7 +392,7 @@ pub const RECIPES: &[Recipe] = &[
         ingredients: &[
             Ingredient { index: item_index("Anomalous Yeast"), count: 1 },
             Ingredient { index: item_index("Glowing Sugar"), count: 1 },
-            Ingredient { index: item_index("Sweettooth Pulp"), count: 4 },
+            Ingredient { index: item_index("Sparkling Champagne"), count: 4 },
             Ingredient { index: item_index("Cubemelon Pulp"), count: 10 },
         ],
         result: &Ingredient { index: item_index("Anomalous Champagne"), count: 5 },
@@ -434,7 +432,7 @@ pub const RECIPES: &[Recipe] = &[
         ],
         result: &Ingredient { index: item_index("Tin Can"), count: 3 },
         energy_count: 100,
-        level_reward: LevelReward::Engeneering(10)
+        level_reward: LevelReward::Engineering(10)
     },
     Recipe { // Done 27/11/2024        Result "Boards"
         ingredients: &[
@@ -442,7 +440,7 @@ pub const RECIPES: &[Recipe] = &[
         ],
         result: &Ingredient { index: item_index("Boards"), count: 2 },
         energy_count: 10,
-        level_reward: LevelReward::Engeneering(10)
+        level_reward: LevelReward::Engineering(10)
     },
 ];
 
@@ -519,11 +517,11 @@ impl Recipe {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug,Hash,PartialEq, Eq)]
 pub enum LevelReward {
     Cooking(u32),
     Moonshining(u32),
     RawMaterials(u32),
-    Engeneering(u32),
+    Engineering(u32),
     None,
 }
