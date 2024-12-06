@@ -26,12 +26,10 @@ impl Tab for ItemTab {
 
         // Adjust index offset to keep the selected item visible
         if self.index >= 0 {
-            let mut show_index = self.index;
             let mut index_offset = 0;
-            while (show_index as usize).saturating_sub(index_offset) > ((3 * menu.menu_h()) / 4) {
+            while (self.index as usize).saturating_sub(index_offset) > ((3 * menu.menu_h()) / 4) {
                 index_offset += menu.menu_h() / 2;
             }
-            show_index -= index_offset as i32;
             self.offset_y = index_offset;
         }
         let mut iterator: std::iter::Skip<std::slice::Iter<'_, crate::item_list::Item>> = ITEMS.iter().skip(self.offset_y);
