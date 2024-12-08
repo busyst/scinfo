@@ -116,13 +116,13 @@ impl RecipesTab {
     ) {
         let mut items_to_craft = vec![index_for_item_and_count];
         //let mut processed_recipes: HashSet<usize> = HashSet::new();
-        let mut deep = 0;
+        let mut deep: u16 = 0;
         
 
         while !items_to_craft.is_empty() {
             let mut current_item = items_to_craft.remove(0);
             if current_item == (0,0){
-                deep -=1;
+                deep = deep.saturating_sub(1 as u16);
                 continue;
             }
             if let Some(d) =  extra_items.get(&current_item.0){
@@ -322,13 +322,16 @@ impl Tab for RecipesTab {
             return;
         }
         let mut t = HashMap::new();
-        let mut energy_usage = 0;
+        let mut energy_usage: u32 = 0;
         let mut approx_price = 0;
         let mut xp_rewards: HashMap<LevelReward, u32> = HashMap::new();
         for x in &steps {
             match x.0 {
                 RecipeStep::Craft(_, x, times) =>{
-                    energy_usage += RECIPES[x].energy_count() * times;
+                    if let Some(x) = energy_usage.checked_add(RECIPES[x].energy_count() * times) {
+                        energy_usage = x;
+                    } 
+                    
 
                     match RECIPES[x].level_reward() {
                         LevelReward::Cooking(reward_xp) => {
@@ -336,6 +339,13 @@ impl Tab for RecipesTab {
                                 *x += reward_xp * times;
                             }else {
                                 xp_rewards.insert(LevelReward::Cooking(0), reward_xp * times);
+                            }
+                        }
+                        LevelReward::Medicine(reward_xp) => {
+                            if let Some(x) = xp_rewards.get_mut(&LevelReward::Cooking(0)){
+                                *x += reward_xp * times;
+                            }else {
+                                xp_rewards.insert(LevelReward::Medicine(0), reward_xp * times);
                             }
                         }
                         LevelReward::Engineering(reward_xp) => {
@@ -374,11 +384,13 @@ impl Tab for RecipesTab {
             }
         }
         if self.mode_subsection == 0{
-            
+            if self.number != 0{
+                approx_price /= rec.result().count() * (1+((self.number.saturating_sub(1))/rec.result().count()));
+            }
             menu.write_in_middle(0, "Statistics ('>' to change mode)", 0, ' ',  ConsoleMenusPosition::Right);
             menu.write_line(1, format!("Complexity:    {} steps",steps.len()).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
             menu.write_line(2, format!("Energy usage:  {} units",energy_usage).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
-            menu.write_line(3, format!("Approximaete price to sell {}",approx_price).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
+            menu.write_line(3, format!("Approximaete price to sell p/o {}",approx_price).as_str(), 0, ' ',  ConsoleMenusPosition::Right);
             menu.write_in_middle(4, format!("Expirience").as_str(), 0, ' ',  ConsoleMenusPosition::Right);
             let mut indx = 0;
             for x in &xp_rewards {
@@ -394,6 +406,9 @@ impl Tab for RecipesTab {
                     }
                     (LevelReward::RawMaterials(_),x) => {
                         menu.write_line(indx + 5, format!("Raw materials: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
+                    }
+                    (LevelReward::Medicine(_),x) => {
+                        menu.write_line(indx + 5, format!("Medicine: {}",x).as_str(), 0, ' ', ConsoleMenusPosition::Right);
                     }
                     (_,_) => {}
                 }

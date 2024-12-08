@@ -2,6 +2,7 @@ use std::io;
 use std::io::prelude::*;
 use std::{collections::HashMap, io::{stdin, Write}};
 
+use auc_net::auction_scraper_show;
 use console_menu::ConsoleMenu;
 use info_tab::InfoTab;
 use item_tab::ItemTab;
@@ -16,13 +17,13 @@ mod item_list;
 mod item_tab;
 mod console_menu;
 mod recipies_tab;
+mod auc_net;
 pub trait Tab {
     fn update(&self) -> bool;
     fn show(&mut self,menu: &mut ConsoleMenu, market: &AucPriceList);
     fn input(&mut self, text: &str);
 }
-#[tokio::main]
-async fn main() {
+fn main() {
     let mut menu = ConsoleMenu::empty();
     menu.set_size(120, 28);
     println!("{}", menu);
@@ -81,24 +82,31 @@ async fn main() {
 
             },
             ('/','i') => {
+                menu.clear_colors();
                 menu.re_render();
                 tab = &mut items_tab;
                 tab.show(&mut menu, &apl);
             }
             ('/','r') => {
+                menu.clear_colors();
                 menu.re_render();
                 tab = &mut recipes_tab;
                 tab.show(&mut menu, &apl);
             }
             ('/','h') => {
+                menu.clear_colors();
                 menu.re_render();
                 tab = &mut info_tab;
                 tab.show(&mut menu, &apl);
             }
             ('/','m') => {
+                menu.clear_colors();
                 menu.re_render();
                 tab = &mut market_tab;
                 tab.show(&mut menu, &apl);
+            }
+            ('/','_') => {
+                tokio::runtime::Runtime::new().expect("msg").block_on(auction_scraper_show());
             }
             ('/','E') => {
                 break;

@@ -105,6 +105,10 @@ pub const ITEMS: &[Item] = &[
     Item::new("Anomalous Dust", "7l127", 250, get_tags(Quality::Stalker)), // Done 30/11/2024
     Item::new("Changedust", "1rl71", 1250, get_tags(Quality::Veteran)), // Done 30/11/2024
     Item::new("Glowing Sugar", "z3ozm", 3663, get_tags(Quality::Stalker)), // Done 30/11/2024
+    Item::new("Coffee", "prl2", 76, get_tags(Quality::Picklock)), // Done 08/12/2024
+    Item::new("Glycerin", "l2kk", 109, get_tags(Quality::Newbie)), // Done 08/12/2024
+    Item::new("Neurotonic", "zzqn2", 0, get_tags(Quality::Veteran)), // Done 08/12/2024
+    Item::new("Caustic Sodium", "ll6q", 97, get_tags(Quality::Newbie)), // Done 08/12/2024  
 ];
 pub const fn item_index(x: &'static str) -> usize {
     let mut i = 0;
@@ -425,6 +429,27 @@ pub const RECIPES: &[Recipe] = &[
         energy_count: 100,
         level_reward: LevelReward::RawMaterials(10)
     },
+    Recipe { // Done 08/12/2024        Result "Neurotonic"
+        ingredients: &[
+            Ingredient { index: item_index("Coffee"), count: 5 },
+            Ingredient { index: item_index("Glycerin"), count: 1 },
+            Ingredient { index: item_index("Sweettooth Pulp"), count: 3 },
+            Ingredient { index: item_index("Hellroot"), count: 6 },
+        ],
+        result: &Ingredient { index: item_index("Neurotonic"), count: 15 },
+        energy_count: 900,
+        level_reward: LevelReward::Medicine(90)
+    },
+    Recipe { // Done 08/12/2024        Result "Petroleum Coke"
+    ingredients: &[
+        Ingredient { index: item_index("Caustic Sodium"), count: 3 },
+        Ingredient { index: item_index("Animal Fat"), count: 4 },
+        Ingredient { index: item_index("Reagents"), count: 1 },
+    ],
+    result: &Ingredient { index: item_index("Glycerin"), count: 4 },
+    energy_count: 900,
+    level_reward: LevelReward::Medicine(90)
+},
     // ------------------ <Workbench> -------------------------------------------------------------------------
     Recipe { // Done 27/11/2024        Result "Tin Can"
         ingredients: &[
@@ -522,6 +547,7 @@ pub enum LevelReward {
     Cooking(u32),
     Moonshining(u32),
     RawMaterials(u32),
+    Medicine(u32),
     Engineering(u32),
     None,
 }
