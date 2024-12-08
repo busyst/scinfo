@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs;
+use std::fs::{self, File};
 use std::io::{self, Write};
 use reqwest::StatusCode;
 use chrono::{DateTime, Utc};
@@ -136,9 +136,12 @@ pub async fn auction_scraper_show() {
     .expect("Failed to create HTTP client");
     let mut d: HashMap<String, (i64, i64, i64, i64, i64, i64)> = HashMap::new();
     let current_time = Utc::now();
-    let mut index = 0;
+
+
+    let mut file = File::create(format!("./au_{}",current_time).as_str()).expect("File was not created");
     let mut brk = false;
     for item in ITEMS {
+        let mut index = 0;
         let mut lots: Vec<Lot> = vec![];
         loop {
             let url = format!("https://eapi.stalcraft.net/{}/auction/{}/history?offset={}&limit=200&additional=true",region,item.id(),index);
@@ -188,18 +191,19 @@ pub async fn auction_scraper_show() {
             }
     
             d.entry(id.clone()).or_insert((0, 0, 0, 0, 0, 0));
+            let price_per_one = (lot.price as f32/lot.count as f32).ceil() as i64;
             let entry = d.get_mut(&id).unwrap();
-            *entry = (entry.0, entry.1 + lot.price, entry.2, entry.3, entry.4, entry.5);
+            *entry = (entry.0, entry.1 + price_per_one, entry.2, entry.3, entry.4, entry.5);
     
-            prices_listm.entry(id.clone()).or_insert_with(Vec::new).push(lot.price);
+            prices_listm.entry(id.clone()).or_insert_with(Vec::new).push(price_per_one);
     
             if ts.num_days() >= 7 {
                 continue;
             }
     
             let entry = d.get_mut(&id).unwrap();
-            *entry = (entry.0 + lot.price, entry.1, entry.2, entry.3, entry.4, entry.5);
-            prices_listw.entry(id.clone()).or_insert_with(Vec::new).push(lot.price);
+            *entry = (entry.0 + price_per_one, entry.1, entry.2, entry.3, entry.4, entry.5);
+            prices_listw.entry(id.clone()).or_insert_with(Vec::new).push(price_per_one);
         }
     
         println!("Med calc");
@@ -263,8 +267,11 @@ pub async fn auction_scraper_show() {
             *value = (w_avg, m_avg, w_med, m_med, w_low_25_median, m_low_25_median);
             println!("{} {},{},{},{},{},{},{}", 
                 id, w_avg, m_avg, w_med, m_med, w_low_25_median, w_low_25_avg, m_low_25_avg);
+            let a = format!("{} {},{},{},{},{},{},{}\n", id, w_avg, m_avg, w_med, m_med, w_low_25_median, w_low_25_avg, m_low_25_avg);
+            file.write(a.as_bytes()).expect("Failed to write to file");
         }
     }
+    
 
 
 }
